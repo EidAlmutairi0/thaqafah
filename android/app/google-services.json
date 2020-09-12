@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "312906741128",
+    "firebase_url": "https://thaqafah-db2a4.firebaseio.com",
+    "project_id": "thaqafah-db2a4",
+    "storage_bucket": "thaqafah-db2a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312906741128:android:73d2d8374813ce80f3f63d",
+        "android_client_info": {
+          "package_name": "com.example.thaqafah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312906741128-d60lt8kli1ulq1uekceebqvi1km00goq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB6JZi5I6oH9sU3O5-IjpiEDVSMPNA1Fs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "312906741128-d60lt8kli1ulq1uekceebqvi1km00goq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
