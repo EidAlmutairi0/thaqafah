@@ -1,8 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:thaqafah/Log_in_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -13,17 +15,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  void initState() {
-    Firebase.initializeApp().then((value) {
-      setState(() {});
-    });
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        "LoginScreen": (context) => LoginPage(),
+      },
+      initialRoute: "LoginScreen",
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
     );
