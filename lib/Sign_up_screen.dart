@@ -277,6 +277,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   setState(() {
                                     showSpinner = false;
                                   });
+                                  print("-------");
+                                  print(e);
+                                  print("-------");
+
                                   if (e == "username") {
                                     showDialog(
                                         context: context,
@@ -285,6 +289,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                   "Username is already taken"),
                                               content: Text(
                                                   "Please choose a new one"),
+                                              actions: [
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text("OK"))
+                                              ],
+                                            ));
+                                  } else if (e.toString() ==
+                                      "[firebase_auth/weak-password] Password should be at least 6 characters") {
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                              title: Text(
+                                                  "Password should be at least 6 characters"),
                                               actions: [
                                                 FlatButton(
                                                     onPressed: () {

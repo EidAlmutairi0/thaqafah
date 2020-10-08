@@ -10,31 +10,10 @@ class UserHomeScreen extends StatefulWidget {
 }
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
-  int currentIndex = 1;
-  final tabs = [
-    Text(
-      "Profile",
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 22,
-      ),
-    ),
-    Text(
-      "Home ",
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 22,
-      ),
-    ),
-    Text(
-      "Leaderboard",
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 22,
-      ),
-    ),
-  ];
   final _auth = FirebaseAuth.instance;
+
+  int currentIndex = 1;
+
   final _firebase = FirebaseFirestore.instance;
   var username;
 
@@ -62,6 +41,78 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = [
+      Center(
+        child: Column(
+          children: [
+            Text(
+              "Profile",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              height: 60,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Color(0xFFD3A762),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: FlatButton(
+                child: Text(
+                  "Log out",
+                  style: TextStyle(fontSize: 22, color: Colors.black),
+                ),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                            title: Text("Are you sure about logging out? "),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("NO")),
+                              FlatButton(
+                                  onPressed: () {
+                                    _auth.signOut();
+
+                                    Navigator.popUntil(context,
+                                        ModalRoute.withName("LoginScreen"));
+                                  },
+                                  child: Text("YES"))
+                            ],
+                          ));
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+      Center(
+        child: Text(
+          "Home ",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+      ),
+      Center(
+        child: Text(
+          "Leaderboard",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+      ),
+    ];
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
         color: Colors.white,
@@ -78,45 +129,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           });
         },
       ),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.close,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                      title: Text("Are you sure about logging out? "),
-                      actions: [
-                        FlatButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text("NO")),
-                        FlatButton(
-                            onPressed: () {
-                              _auth.signOut();
-
-                              Navigator.popUntil(
-                                  context, ModalRoute.withName("LoginScreen"));
-                            },
-                            child: Text("YES"))
-                      ],
-                    ));
-          },
-        ),
-        centerTitle: true,
-        title: tabs[currentIndex],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF9188E4), Color(0xFF776ECB)])),
-        ),
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -127,6 +139,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
+                child: tabs[currentIndex],
                 padding: const EdgeInsets.only(top: 40),
               ),
             ),

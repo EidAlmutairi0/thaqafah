@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:thaqafah/Log_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:thaqafah/category.dart';
+
+var currentCategory;
+var currentQuiz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +24,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       routes: {
         "LoginScreen": (context) => LoginPage(),
+        "category": (context) => category(),
       },
       initialRoute: "LoginScreen",
       debugShowCheckedModeBanner: false,
