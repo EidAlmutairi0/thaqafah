@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/Log_in_screen.dart';
-import 'package:thaqafah/main.dart';
+import 'package:thaqafah/AdminScreens/Admin_Category.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:thaqafah/main.dart';
+import 'package:thaqafah/UserScreens/User_Category.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   @override
@@ -143,7 +145,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       width: 300,
                       height: 60,
                       child: FlatButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserCategory(),
+                            ),
+                          );
+                        },
                         child: Text(
                           aCategory,
                           style: TextStyle(color: Colors.white, fontSize: 30),
@@ -206,7 +214,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           width: 300,
                           height: 60,
                           child: FlatButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              currentCategory = aCategory;
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => AdminCategory(),
+                                ),
+                              );
+                            },
                             child: Text(
                               aCategory,
                               style:
@@ -363,7 +378,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           TabItem(icon: Icons.home, title: 'Home'),
           TabItem(icon: Icons.build_rounded, title: 'administration '),
         ],
-        initialActiveIndex: 1, //optional, default as 0
+        //optional, default as 0
         onTap: (int i) {
           setState(() {
             currentIndex = i;

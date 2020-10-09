@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thaqafah/Log_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:thaqafah/category.dart';
+import 'file:///C:/Users/eid_1/AndroidStudioProjects/thaqafah/lib/UserScreens/User_Category.dart';
 
 var currentCategory;
 var currentQuiz;
@@ -24,7 +24,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       routes: {
         "LoginScreen": (context) => LoginPage(),
-        "category": (context) => category(),
       },
       initialRoute: "LoginScreen",
       debugShowCheckedModeBanner: false,
