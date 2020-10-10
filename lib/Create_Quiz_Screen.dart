@@ -1,26 +1,29 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:thaqafah/Log_in_screen.dart';
 import 'package:thaqafah/main.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:group_radio_button/group_radio_button.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class CreateQuizScreen extends StatefulWidget {
   @override
   _CreateQuizScreenState createState() => _CreateQuizScreenState();
 }
 
-var quizName;
-var quizDescription;
-
 class _CreateQuizScreenState extends State<CreateQuizScreen> {
-  static final _firebase = FirebaseFirestore.instance;
+  final _firebase = FirebaseFirestore.instance;
+  String quizName;
+  String quizDescription;
   String questionTitle;
   String correctAnswer;
   String wrongAnswerOne;
   String wrongAnswerTwo;
   String wrongAnswerthree;
   List<String> answers;
+
+  final HttpsCallable callable =
+      CloudFunctions.instance.getHttpsCallable(functionName: 'recursiveDelete');
 
   // ignore: must_call_super
   initState() {
@@ -32,7 +35,47 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   bool complete = false;
 
   cancel() {
-    if (currentStep > 0) {
+    if (currentStep == 2) {
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                title: Text("Are you sure about canceling this operation?"),
+                actions: [
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("NO")),
+                  FlatButton(
+                      onPressed: () {
+                        _firebase
+                            .collection("Categories")
+                            .doc("$currentCategory")
+                            .collection("Quizzes")
+                            .doc("${quizName}")
+                            .collection("Questions")
+                            .get()
+                            .then((snapshot) => {
+                                  for (DocumentSnapshot ds in snapshot.docs)
+                                    {ds.reference.delete()}
+                                })
+                            .then((value) => {
+                                  _firebase
+                                      .collection("Categories")
+                                      .doc("$currentCategory")
+                                      .collection("Quizzes")
+                                      .doc("${quizName}")
+                                      .delete()
+                                })
+                            .then((value) => {
+                                  Navigator.pop(context),
+                                  goto(currentStep - 1),
+                                });
+                      },
+                      child: Text("YES"))
+                ],
+              ));
+    } else if (currentStep > 0) {
       goto(currentStep - 1);
     }
   }
@@ -45,10 +88,6 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String _singleValue = "Text alignment right";
-    String _verticalGroupValue = "Pending";
-
-    List<String> _status = ["Pending", "Released", "Blocked"];
     final _firebase = FirebaseFirestore.instance;
     List<Step> steps = [
       Step(
@@ -112,7 +151,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                     final categories = snapshot.data.docs;
                     List<Padding> categoriesWidgets = [];
                     for (var Category in categories) {
-                      var aCategory = Category.id;
+                      var aQuestion = Category.id;
                       var corrAnswer = Category.get("correct Answer");
                       var wroAnswer1 = Category.get("wrong Answer One");
                       var wroAnswer2 = Category.get("wrong Answer two");
@@ -132,7 +171,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                               child: Column(
                                 children: [
                                   Text(
-                                    aCategory,
+                                    aQuestion,
                                     style: TextStyle(
                                         color: Colors.black54, fontSize: 20),
                                   ),
@@ -201,7 +240,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                                             .doc("$quizName")
                                                             .collection(
                                                                 "Questions")
-                                                            .doc("$aCategory")
+                                                            .doc("$aQuestion")
                                                             .delete();
                                                         Navigator.pop(context);
                                                       },
@@ -309,24 +348,62 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                         buttons: [
                           DialogButton(
                             onPressed: () => {
-                              print("hi"),
-                              print("bye"),
-                              _firebase
-                                  .collection("Categories")
-                                  .doc("$currentCategory")
-                                  .collection("Quizzes")
-                                  .doc("$quizName")
-                                  .collection("Questions")
-                                  .doc("$questionTitle")
-                                  .set({
-                                "question Title": questionTitle,
-                                "anwers": answers,
-                                "correct Answer": correctAnswer,
-                                "wrong Answer One": wrongAnswerOne,
-                                "wrong Answer two": wrongAnswerTwo,
-                                "wrong Answer Three": wrongAnswerthree,
-                              }),
-                              Navigator.pop(context)
+                              if (questionTitle == null ||
+                                  questionTitle == "    " ||
+                                  correctAnswer == null ||
+                                  correctAnswer == "    " ||
+                                  wrongAnswerOne == null ||
+                                  wrongAnswerOne == "    " ||
+                                  wrongAnswerTwo == null ||
+                                  wrongAnswerTwo == "    " ||
+                                  wrongAnswerthree == null ||
+                                  wrongAnswerthree == "    ")
+                                {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                            title: Text(
+                                                "All fields are mandatory "),
+                                            content:
+                                                Text("Please write them all"),
+                                            actions: [
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("OK"))
+                                            ],
+                                          ))
+                                }
+                              else
+                                {
+                                  _firebase
+                                      .collection("Categories")
+                                      .doc("$currentCategory")
+                                      .collection("Quizzes")
+                                      .doc("$quizName")
+                                      .set({"author": username}).then((value) =>
+                                          {
+                                            _firebase
+                                                .collection("Categories")
+                                                .doc("$currentCategory")
+                                                .collection("Quizzes")
+                                                .doc("$quizName")
+                                                .collection("Questions")
+                                                .doc("$questionTitle")
+                                                .set({
+                                              "question Title": questionTitle,
+                                              "correct Answer": correctAnswer,
+                                              "wrong Answer One":
+                                                  wrongAnswerOne,
+                                              "wrong Answer two":
+                                                  wrongAnswerTwo,
+                                              "wrong Answer Three":
+                                                  wrongAnswerthree,
+                                            }),
+                                          }),
+                                  Navigator.pop(context)
+                                }
                             },
                             child: Text(
                               "Create",
@@ -347,7 +424,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
     ];
 
     next() {
-      if (quizName == null || quizName == "") {
+      if (quizName == null || quizName == "    ") {
         showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -370,6 +447,34 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            _firebase
+                .collection("Categories")
+                .doc("$currentCategory")
+                .collection("Quizzes")
+                .doc("${quizName}")
+                .collection("Questions")
+                .get()
+                .then((snapshot) => {
+                      for (DocumentSnapshot ds in snapshot.docs)
+                        {ds.reference.delete()}
+                    })
+                .then((value) => {
+                      _firebase
+                          .collection("Categories")
+                          .doc("$currentCategory")
+                          .collection("Quizzes")
+                          .doc("${quizName}")
+                          .delete()
+                    })
+                .then((value) => {
+                      Navigator.pop(context),
+                      goto(currentStep - 1),
+                    });
+          },
+        ),
         centerTitle: true,
         title: Text(
           "Create a Quiz",

@@ -36,6 +36,7 @@ dependencies:
   outline_material_icons: ^0.1.1
   rflutter_alert: ^1.1.0
   group_radio_button: ^1.0.1
+  cloud_functions: ^0.6.0+1
 
 
 

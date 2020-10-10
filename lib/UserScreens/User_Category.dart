@@ -65,7 +65,7 @@ class _UserCategoryState extends State<UserCategory> {
                     stream: _firebase
                         .collection("Categories")
                         .doc("$currentCategory")
-                        .collection("quizzes")
+                        .collection("Quizzes")
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {

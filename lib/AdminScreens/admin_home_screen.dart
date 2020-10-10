@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -13,13 +15,13 @@ class AdminHomeScreen extends StatefulWidget {
   _AdminHomeScreenState createState() => _AdminHomeScreenState();
 }
 
-class _AdminHomeScreenState extends State<AdminHomeScreen> {
+class _AdminHomeScreenState extends State<AdminHomeScreen>
+    with TickerProviderStateMixin {
   final _auth = FirebaseAuth.instance;
 
   int currentIndex = 1;
 
   final _firebase = FirebaseFirestore.instance;
-  var username;
 
   User loggedInUser;
   @override
@@ -146,6 +148,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       height: 60,
                       child: FlatButton(
                         onPressed: () {
+                          currentCategory = aCategory;
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => UserCategory(),
@@ -371,6 +374,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     ];
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
+        initialActiveIndex: currentIndex,
+        controller: TabController(
+          initialIndex: currentIndex,
+          length: 3,
+          vsync: this,
+        ),
         color: Colors.white,
         backgroundColor: Color(0xFF673ab7),
         items: [
