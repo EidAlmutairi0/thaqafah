@@ -121,10 +121,31 @@ class _AdminCategoryState extends State<AdminCategory> {
                                                                 .collection(
                                                                     "Categories")
                                                                 .doc(
-                                                                    "${Category.id}")
-                                                                .delete();
-                                                            Navigator.pop(
-                                                                context);
+                                                                    "$currentCategory")
+                                                                .collection(
+                                                                    "Quizzes")
+                                                                .get()
+                                                                .then(
+                                                                    (snapshot) =>
+                                                                        {
+                                                                          for (DocumentSnapshot ds in snapshot
+                                                                              .docs)
+                                                                            {
+                                                                              ds.reference.delete()
+                                                                            }
+                                                                        })
+                                                                .then(
+                                                                    (value) => {
+                                                                          _firebase
+                                                                              .collection("Categories")
+                                                                              .doc("$currentCategory")
+                                                                              .delete()
+                                                                        })
+                                                                .then(
+                                                                    (value) => {
+                                                                          Navigator.pop(
+                                                                              context),
+                                                                        });
                                                           },
                                                           child: Text("YES"))
                                                     ],

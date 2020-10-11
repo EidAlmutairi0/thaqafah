@@ -5,6 +5,7 @@ import 'package:thaqafah/Log_in_screen.dart';
 import 'package:thaqafah/main.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cool_alert/cool_alert.dart';
 
 class CreateQuizScreen extends StatefulWidget {
   @override
@@ -21,17 +22,18 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   String wrongAnswerTwo;
   String wrongAnswerthree;
   List<String> answers;
+  int currentStep;
 
   final HttpsCallable callable =
       CloudFunctions.instance.getHttpsCallable(functionName: 'recursiveDelete');
 
   // ignore: must_call_super
   initState() {
+    currentStep = 0;
     quizName = null;
     quizDescription = null;
   }
 
-  int currentStep = 0;
   bool complete = false;
 
   cancel() {
@@ -438,6 +440,13 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                         child: Text("OK"))
                   ],
                 ));
+      } else if (currentStep == 2) {
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.success,
+            onConfirmBtnTap: () {
+              Navigator.pop(context);
+            }).then((value) => {Navigator.pop(context)});
       } else {
         currentStep + 1 != steps.length
             ? goto(currentStep + 1)
@@ -450,29 +459,49 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
         leading: IconButton(
           icon: Icon(Icons.clear),
           onPressed: () {
-            _firebase
-                .collection("Categories")
-                .doc("$currentCategory")
-                .collection("Quizzes")
-                .doc("${quizName}")
-                .collection("Questions")
-                .get()
-                .then((snapshot) => {
-                      for (DocumentSnapshot ds in snapshot.docs)
-                        {ds.reference.delete()}
-                    })
-                .then((value) => {
-                      _firebase
-                          .collection("Categories")
-                          .doc("$currentCategory")
-                          .collection("Quizzes")
-                          .doc("${quizName}")
-                          .delete()
-                    })
-                .then((value) => {
-                      Navigator.pop(context),
-                      goto(currentStep - 1),
-                    });
+            showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                      title:
+                          Text("Are you sure about canceling this operation?"),
+                      actions: [
+                        FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text("NO")),
+                        FlatButton(
+                            onPressed: () {
+                              _firebase
+                                  .collection("Categories")
+                                  .doc("$currentCategory")
+                                  .collection("Quizzes")
+                                  .doc("${quizName}")
+                                  .collection("Questions")
+                                  .get()
+                                  .then((snapshot) => {
+                                        for (DocumentSnapshot ds
+                                            in snapshot.docs)
+                                          {ds.reference.delete()}
+                                      })
+                                  .then((value) => {
+                                        _firebase
+                                            .collection("Categories")
+                                            .doc("$currentCategory")
+                                            .collection("Quizzes")
+                                            .doc("${quizName}")
+                                            .delete()
+                                      })
+                                  .then((value) => {
+                                        Navigator.pop(context),
+                                      })
+                                  .then((value) => {
+                                        Navigator.pop(context),
+                                      });
+                            },
+                            child: Text("YES"))
+                      ],
+                    ));
           },
         ),
         centerTitle: true,
