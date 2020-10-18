@@ -37,7 +37,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
       if (user != null) {
         loggedInUser = user;
         final snapshot =
-            await _firebase.collection("Users").doc("$email").get();
+            await _firebase.collection("Users").doc("${user.email}").get();
         username = await snapshot.get("Username");
       }
     } catch (e) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:thaqafah/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/Create_Quiz_Screen.dart';
+import 'package:thaqafah/UserScreens/Quiz_description.dart';
+import 'package:thaqafah/QuestionsBank.dart';
 
 class UserCategory extends StatefulWidget {
   @override
@@ -73,6 +75,7 @@ class _UserCategoryState extends State<UserCategory> {
                         List<Padding> categoriesWidgets = [];
                         for (var Category in categories) {
                           var aCategory = Category.id;
+
                           // ignore: non_constant_identifier_names
                           final CategoryWidget = Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -87,7 +90,24 @@ class _UserCategoryState extends State<UserCategory> {
                                   width: 300,
                                   height: 60,
                                   child: FlatButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        currentQuiz = aCategory;
+                                        QuizName = aCategory;
+                                        QuizDescrepyion =
+                                            Category.get("Quiz Description");
+
+                                        numOfQuestions =
+                                            Category.get("number of Questions")
+                                                .toString();
+                                      });
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              QuizDescription(),
+                                        ),
+                                      );
+                                    },
                                     child: Text(
                                       aCategory,
                                       style: TextStyle(

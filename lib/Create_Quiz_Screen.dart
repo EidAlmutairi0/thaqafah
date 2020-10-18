@@ -1,7 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:thaqafah/Log_in_screen.dart';
 import 'package:thaqafah/main.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -120,7 +118,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
           state: StepState.indexed,
           content: TextFormField(
             keyboardType: TextInputType.text,
-            onSaved: (String value) {
+            onChanged: (String value) {
               quizDescription = value;
             },
             autocorrect: false,
@@ -308,7 +306,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                 });
                               },
                               decoration: InputDecoration(
-                                labelText: 'Correct title',
+                                labelText: 'Correct answer',
                               ),
                               maxLines: 1,
                             ),
@@ -384,25 +382,24 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                       .doc("$currentCategory")
                                       .collection("Quizzes")
                                       .doc("$quizName")
-                                      .set({"author": username}).then((value) =>
-                                          {
+                                      .collection("Questions")
+                                      .doc("$questionTitle")
+                                      .set({
+                                    "question Title": questionTitle,
+                                    "correct Answer": correctAnswer,
+                                    "wrong Answer One": wrongAnswerOne,
+                                    "wrong Answer two": wrongAnswerTwo,
+                                    "wrong Answer Three": wrongAnswerthree,
+                                  }).then((value) => {
                                             _firebase
                                                 .collection("Categories")
                                                 .doc("$currentCategory")
                                                 .collection("Quizzes")
                                                 .doc("$quizName")
-                                                .collection("Questions")
-                                                .doc("$questionTitle")
-                                                .set({
-                                              "question Title": questionTitle,
-                                              "correct Answer": correctAnswer,
-                                              "wrong Answer One":
-                                                  wrongAnswerOne,
-                                              "wrong Answer two":
-                                                  wrongAnswerTwo,
-                                              "wrong Answer Three":
-                                                  wrongAnswerthree,
-                                            }),
+                                                .update({
+                                              "number of Questions":
+                                                  FieldValue.increment(1),
+                                            })
                                           }),
                                   Navigator.pop(context)
                                 }
@@ -440,13 +437,56 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                         child: Text("OK"))
                   ],
                 ));
+      } else if (currentStep == 1) {
+        _firebase
+            .collection("Categories")
+            .doc("$currentCategory")
+            .collection("Quizzes")
+            .doc("$quizName")
+            .set({
+          "Author": username,
+          "Quiz Description": quizDescription,
+          "number of Questions": 0,
+        });
+        currentStep + 1 != steps.length
+            ? goto(currentStep + 1)
+            : setState(() => complete = true);
       } else if (currentStep == 2) {
-        CoolAlert.show(
-            context: context,
-            type: CoolAlertType.success,
-            onConfirmBtnTap: () {
-              Navigator.pop(context);
-            }).then((value) => {Navigator.pop(context)});
+        _firebase
+            .collection("Categories")
+            .doc("$currentCategory")
+            .collection("Quizzes")
+            .doc("$quizName")
+            .get()
+            .then((value) => {
+                  if (value.exists)
+                    {
+                      CoolAlert.show(
+                          context: context,
+                          type: CoolAlertType.success,
+                          onConfirmBtnTap: () {
+                            Navigator.pop(context);
+                          }).then((value) => {Navigator.pop(context)})
+                    }
+                  else
+                    {
+                      showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                                title: Text("There is no questions "),
+                                content: Text("Please write one at least"),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("OK"))
+                                ],
+                              ))
+                    }
+                });
+        // ignore: unrelated_type_equality_checks
+
       } else {
         currentStep + 1 != steps.length
             ? goto(currentStep + 1)

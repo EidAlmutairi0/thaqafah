@@ -53,7 +53,7 @@ class _AdminCategoryState extends State<AdminCategory> {
                     stream: _firebase
                         .collection("Categories")
                         .doc("$currentCategory")
-                        .collection("quizzes")
+                        .collection("Quizzes")
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -75,7 +75,11 @@ class _AdminCategoryState extends State<AdminCategory> {
                                   width: 300,
                                   height: 60,
                                   child: FlatButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        currentQuiz = aCategory;
+                                      });
+                                    },
                                     child: Text(
                                       aCategory,
                                       style: TextStyle(
@@ -105,9 +109,7 @@ class _AdminCategoryState extends State<AdminCategory> {
                                               context: context,
                                               builder: (_) => AlertDialog(
                                                     title: Text(
-                                                        "Are you sure about deleting this category"),
-                                                    content: Text(
-                                                        "Remember that if you delete this category all the quizzes in it will be deleted as well "),
+                                                        "Are you sure about deleting this quiz"),
                                                     actions: [
                                                       FlatButton(
                                                           onPressed: () {
@@ -124,6 +126,10 @@ class _AdminCategoryState extends State<AdminCategory> {
                                                                     "$currentCategory")
                                                                 .collection(
                                                                     "Quizzes")
+                                                                .doc(
+                                                                    "${aCategory}")
+                                                                .collection(
+                                                                    "Questions")
                                                                 .get()
                                                                 .then(
                                                                     (snapshot) =>
@@ -139,6 +145,8 @@ class _AdminCategoryState extends State<AdminCategory> {
                                                                           _firebase
                                                                               .collection("Categories")
                                                                               .doc("$currentCategory")
+                                                                              .collection("Quizzes")
+                                                                              .doc("${aCategory}")
                                                                               .delete()
                                                                         })
                                                                 .then(

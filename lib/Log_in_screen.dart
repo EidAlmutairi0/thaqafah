@@ -5,8 +5,8 @@ import 'AdminScreens/admin_home_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-var email;
-var password;
+String email;
+String password;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -159,9 +159,10 @@ class _LoginPageState extends State<LoginPage> {
                                       await _auth.signInWithEmailAndPassword(
                                           email: email, password: password);
                                   if (user != null) {
+                                    email = email.toLowerCase();
                                     if (email == "eid@hotmail.com" ||
                                         email == "wleedas38@gmail.com" ||
-                                        email == "Tha-mer@hotmail.com") {
+                                        email == "tha-mer@hotmail.com") {
                                       Navigator.of(context)
                                           .push(
                                         MaterialPageRoute(
