@@ -38,6 +38,9 @@ dependencies:
   group_radio_button: ^1.0.1
   cloud_functions: ^0.6.0+1
   cool_alert: ^1.0.1
+  sweetalert: ^0.0.1
+  circular_countdown_timer: ^0.0.7
+
 
 
 
