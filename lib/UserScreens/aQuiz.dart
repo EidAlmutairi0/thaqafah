@@ -9,6 +9,13 @@ class aQuiz extends StatefulWidget {
 }
 
 class _aQuizState extends State<aQuiz> {
+  initState() {
+    Q.shuffle();
+    for (var x in Q) {
+      x.Answers.shuffle();
+    }
+  }
+
   int currntQua = 0;
   int score = 0;
   bool answered = false;

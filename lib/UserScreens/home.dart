@@ -1,14 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/Log_in_screen.dart';
-import 'package:thaqafah/AdminScreens/Admin_Category.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:thaqafah/main.dart';
 import 'package:thaqafah/UserScreens/User_Category.dart';
+import 'package:thaqafah/my_quizzes.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -77,6 +74,30 @@ class _UserHomeScreenState extends State<UserHomeScreen>
           ),
           SizedBox(
             height: 20,
+          ),
+          Container(
+            height: 60,
+            width: 200,
+            decoration: BoxDecoration(
+              color: Color(0xFFD3A762),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: FlatButton(
+              child: Text(
+                "My Quizzes",
+                style: TextStyle(fontSize: 22, color: Colors.black),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MyQuizzes(),
+                  ),
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            height: 40,
           ),
           Container(
             height: 60,

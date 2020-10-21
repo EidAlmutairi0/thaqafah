@@ -22,6 +22,17 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   List<String> answers;
   int currentStep;
 
+  String getCurrentDate() {
+    var date = new DateTime.now().toString();
+
+    var dateParse = DateTime.parse(date);
+
+    var formattedDate =
+        "${dateParse.second}-${dateParse.minute}-${dateParse.hour}-${dateParse.day}-${dateParse.month}-${dateParse.year}";
+
+    return formattedDate.toString();
+  }
+
   final HttpsCallable callable =
       CloudFunctions.instance.getHttpsCallable(functionName: 'recursiveDelete');
 
@@ -390,6 +401,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                     "wrong Answer One": wrongAnswerOne,
                                     "wrong Answer two": wrongAnswerTwo,
                                     "wrong Answer Three": wrongAnswerthree,
+                                    "time": getCurrentDate(),
                                   }).then((value) => {
                                             _firebase
                                                 .collection("Categories")
@@ -399,7 +411,20 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                                 .update({
                                               "number of Questions":
                                                   FieldValue.increment(1),
-                                            })
+                                            }).then((value) => {
+                                                      _firebase
+                                                          .collection(
+                                                              "Usernames")
+                                                          .doc("$username")
+                                                          .collection(
+                                                              "MyQuizzes")
+                                                          .doc("$quizName")
+                                                          .set({
+                                                        "Quiz name": quizName,
+                                                        "Quiz Category":
+                                                            currentCategory,
+                                                      })
+                                                    })
                                           }),
                                   Navigator.pop(context)
                                 }

@@ -3,7 +3,6 @@ import 'package:thaqafah/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/Create_Quiz_Screen.dart';
 import 'package:thaqafah/UserScreens/Quiz_description.dart';
-import 'package:thaqafah/QuestionsBank.dart';
 
 class UserCategory extends StatefulWidget {
   @override

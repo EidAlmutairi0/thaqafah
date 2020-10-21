@@ -1,5 +1,3 @@
-import 'dart:math';
-
 class Questions {
   var QuestionTilte;
   var CorrectAnswer;

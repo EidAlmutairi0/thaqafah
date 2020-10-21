@@ -43,6 +43,7 @@ class _QuizDescriptionState extends State<QuizDescription> {
         .collection("Quizzes")
         .doc("$currentQuiz")
         .collection("Questions")
+        .orderBy("time")
         .get()
         .then((snapshot) => getQua(snapshot));
 

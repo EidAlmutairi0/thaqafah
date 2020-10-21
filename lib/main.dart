@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thaqafah/Log_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'file:///C:/Users/eid_1/AndroidStudioProjects/thaqafah/lib/UserScreens/User_Category.dart';
 
 var username;
 
