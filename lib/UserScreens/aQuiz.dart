@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:thaqafah/UserScreens/Quiz_description.dart';
 import 'package:sweetalert/sweetalert.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:thaqafah/main.dart';
 
 class aQuiz extends StatefulWidget {
   @override
@@ -9,6 +12,17 @@ class aQuiz extends StatefulWidget {
 }
 
 class _aQuizState extends State<aQuiz> {
+  CalScore() {
+    double sec = _controller.conValue();
+    if (sec >= 0.66666667) {
+      score++;
+    } else if (sec >= 0.33333333 && sec < 0.66666667) {
+      score = score + 0.5;
+    } else if (sec >= 0.00000001 && sec < 0.33333333) {
+      score = score + 0.25;
+    }
+  }
+
   initState() {
     Q.shuffle();
     for (var x in Q) {
@@ -17,17 +31,57 @@ class _aQuizState extends State<aQuiz> {
   }
 
   int currntQua = 0;
-  int score = 0;
+  double score = 0;
   bool answered = false;
   CountDownController _controller = CountDownController();
+  double rate = 0;
+  final _firebase = FirebaseFirestore.instance;
 
   nextQua() {
     if (currntQua >= Q.length - 1) {
       _controller.pause();
+      score = (score / Q.length) * 100;
+
       SweetAlert.show(context,
           title: "You have finished the quiz",
-          subtitle: "Your score is $score out of ${Q.length}",
+          subtitle: Column(
+            children: [
+              Text("Your score is ${score.toInt()} out of 100"),
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  print(rating);
+                  setState(() {
+                    rate = rating;
+                  });
+                  print(rate);
+                },
+              ),
+            ],
+          ),
+          // ignore: missing_return
           style: SweetAlertStyle.success, onPress: (bool x) {
+        if (rate != 0) {
+          _firebase
+              .collection("Categories")
+              .doc("$currentCategory")
+              // ignore: missing_return
+              .collection("Quizzes")
+              .doc("/$currentQuiz")
+              .update({
+            "Total Rate": FieldValue.increment(rate),
+            "number of ratings": FieldValue.increment(1),
+          });
+        }
         Navigator.pop(context);
       });
     }
@@ -151,7 +205,8 @@ class _aQuizState extends State<aQuiz> {
                                 if (answered == false) {
                                   if (Q[currntQua].Answers[0] ==
                                       Q[currntQua].CorrectAnswer) {
-                                    score++;
+                                    CalScore();
+                                    print(_controller.conValue());
                                   }
                                   answered = true;
                                   nextQua();
@@ -180,7 +235,8 @@ class _aQuizState extends State<aQuiz> {
                                 if (answered == false) {
                                   if (Q[currntQua].Answers[1] ==
                                       Q[currntQua].CorrectAnswer) {
-                                    score++;
+                                    CalScore();
+                                    print(_controller.conValue());
                                   }
                                   answered = true;
                                   nextQua();
@@ -209,7 +265,8 @@ class _aQuizState extends State<aQuiz> {
                                 if (answered == false) {
                                   if (Q[currntQua].Answers[2] ==
                                       Q[currntQua].CorrectAnswer) {
-                                    score++;
+                                    CalScore();
+                                    print(_controller.conValue());
                                   }
                                   answered = true;
                                   nextQua();
@@ -238,7 +295,8 @@ class _aQuizState extends State<aQuiz> {
                                 if (answered == false) {
                                   if (Q[currntQua].Answers[3] ==
                                       Q[currntQua].CorrectAnswer) {
-                                    score++;
+                                    CalScore();
+                                    print(_controller.conValue());
                                   }
                                   answered = true;
                                   nextQua();

@@ -10,6 +10,9 @@ class UserCategory extends StatefulWidget {
 }
 
 class _UserCategoryState extends State<UserCategory> {
+  var totalRate;
+  var numOfRatrings;
+  String aQuizRate = "--";
   @override
   Widget build(BuildContext context) {
     final _firebase = FirebaseFirestore.instance;
@@ -74,6 +77,14 @@ class _UserCategoryState extends State<UserCategory> {
                         List<Padding> categoriesWidgets = [];
                         for (var Category in categories) {
                           var aCategory = Category.id;
+                          totalRate = Category.get("Total Rate");
+                          numOfRatrings = Category.get("number of ratings");
+                          if (numOfRatrings != 0) {
+                            aQuizRate =
+                                (totalRate / numOfRatrings).toStringAsFixed(1);
+                          } else {
+                            aQuizRate = "--";
+                          }
 
                           // ignore: non_constant_identifier_names
                           final CategoryWidget = Padding(
@@ -89,30 +100,54 @@ class _UserCategoryState extends State<UserCategory> {
                                   width: 300,
                                   height: 60,
                                   child: FlatButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        currentQuiz = aCategory;
-                                        QuizName = aCategory;
-                                        QuizDescrepyion =
-                                            Category.get("Quiz Description");
+                                      onPressed: () {
+                                        setState(() {
+                                          currentQuiz = aCategory;
+                                          QuizName = aCategory;
 
-                                        numOfQuestions =
-                                            Category.get("number of Questions")
-                                                .toString();
-                                      });
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              QuizDescription(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      aCategory,
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 30),
-                                    ),
-                                  ),
+                                          QuizDescrepyion =
+                                              Category.get("Quiz Description");
+
+                                          numOfQuestions = Category.get(
+                                                  "number of Questions")
+                                              .toString();
+                                        });
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                QuizDescription(),
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            aCategory,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 30),
+                                          ),
+                                          Container(
+                                            child: Center(
+                                              child: Text(
+                                                aQuizRate,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: Colors.white)),
+                                            height: 35,
+                                            width: 35,
+                                          ),
+                                        ],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                      )),
                                 ),
                                 SizedBox(
                                   width: 10,

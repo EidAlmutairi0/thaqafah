@@ -40,6 +40,7 @@ dependencies:
   cool_alert: ^1.0.1
   sweetalert: ^0.0.1
   circular_countdown_timer: ^0.0.7
+  flutter_rating_bar: ^3.2.0
 
 
 

@@ -472,6 +472,8 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
           "Author": username,
           "Quiz Description": quizDescription,
           "number of Questions": 0,
+          "Total Rate": 0,
+          "number of ratings": 0,
         });
         currentStep + 1 != steps.length
             ? goto(currentStep + 1)
