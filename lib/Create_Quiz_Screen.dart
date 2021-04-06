@@ -474,6 +474,13 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
           "number of Questions": 0,
           "Total Rate": 0,
           "number of ratings": 0,
+          "The rate": 0,
+          "First": -1,
+          "Second": -1,
+          "Third": -1,
+          "FirstName": "-",
+          "SecondName": "-",
+          "ThirdName": "-",
         });
         currentStep + 1 != steps.length
             ? goto(currentStep + 1)
@@ -484,9 +491,10 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
             .doc("$currentCategory")
             .collection("Quizzes")
             .doc("$quizName")
+            .collection("Questions")
             .get()
             .then((value) => {
-                  if (value.exists)
+                  if (value.size != 0)
                     {
                       CoolAlert.show(
                           context: context,

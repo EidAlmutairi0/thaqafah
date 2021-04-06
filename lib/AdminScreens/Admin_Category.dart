@@ -83,7 +83,7 @@ class _AdminCategoryState extends State<AdminCategory> {
                                     child: Text(
                                       aCategory,
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 30),
+                                          color: Colors.white, fontSize: 22),
                                     ),
                                   ),
                                 ),

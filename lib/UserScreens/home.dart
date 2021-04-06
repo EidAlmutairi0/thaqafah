@@ -6,6 +6,7 @@ import 'package:thaqafah/Log_in_screen.dart';
 import 'package:thaqafah/main.dart';
 import 'package:thaqafah/UserScreens/User_Category.dart';
 import 'package:thaqafah/my_quizzes.dart';
+import 'package:thaqafah/MyHistory.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -91,6 +92,30 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => MyQuizzes(),
+                  ),
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+            height: 60,
+            width: 200,
+            decoration: BoxDecoration(
+              color: Color(0xFFD3A762),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: FlatButton(
+              child: Text(
+                "My History",
+                style: TextStyle(fontSize: 22, color: Colors.black),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MyHistory(),
                   ),
                 );
               },

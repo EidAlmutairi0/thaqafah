@@ -5,6 +5,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/main.dart';
+import 'package:thaqafah/UserScreens/User_Category.dart';
 
 class aQuiz extends StatefulWidget {
   @override
@@ -23,6 +24,66 @@ class _aQuizState extends State<aQuiz> {
     }
   }
 
+  var tempA;
+  var tempb;
+  checkLeaderBoard() async {
+    _firebase
+        .collection("Categories")
+        .doc("$currentCategory")
+        .collection("Quizzes")
+        .doc("$currentQuiz")
+        .get()
+        .then((snapshot) => {
+              first = snapshot.get("First"),
+              second = snapshot.get("Second"),
+              third = snapshot.get("Third"),
+              firstName = snapshot.get("FirstName"),
+              secondName = snapshot.get("SecondName"),
+              thirdName = snapshot.get("ThirdName"),
+            })
+        .whenComplete(() => {
+              if (first == -1.0)
+                {
+                  setState(() {
+                    // ignore: unnecessary_statements
+                    firstOne == "-";
+                  })
+                }
+              else
+                {
+                  setState(() {
+                    firstOne = "$firstName $first";
+                  })
+                },
+              if (second == -1.0)
+                {
+                  setState(() {
+                    // ignore: unnecessary_statements
+                    secondOne == "-";
+                  })
+                }
+              else
+                {
+                  setState(() {
+                    secondOne = "$secondName $second";
+                  })
+                },
+              if (third == -1.0)
+                {
+                  setState(() {
+                    // ignore: unnecessary_statements
+                    thirdOne == "-";
+                  })
+                }
+              else
+                {
+                  setState(() {
+                    thirdOne = "$thirdName $third";
+                  })
+                }
+            });
+  }
+
   initState() {
     Q.shuffle();
     for (var x in Q) {
@@ -37,10 +98,114 @@ class _aQuizState extends State<aQuiz> {
   double rate = 0;
   final _firebase = FirebaseFirestore.instance;
 
+  leaderBaord(double score) {
+    if (score > first) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "ThirdName": secondName,
+        "Third": second,
+      }).then((value) => {
+                _firebase
+                    .collection("Categories")
+                    .doc("$currentCategory")
+                    .collection("Quizzes")
+                    .doc("$currentQuiz")
+                    .update({
+                  "SecondName": firstName,
+                  "Second": first,
+                }).then((value) => {
+                          _firebase
+                              .collection("Categories")
+                              .doc("$currentCategory")
+                              .collection("Quizzes")
+                              .doc("$currentQuiz")
+                              .update({
+                            "FirstName": username,
+                            "First": score,
+                          })
+                        })
+              });
+      return;
+    } else if (score > second) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "ThirdName": secondName,
+        "Third": second,
+      }).then((value) => {
+                _firebase
+                    .collection("Categories")
+                    .doc("$currentCategory")
+                    .collection("Quizzes")
+                    .doc("$currentQuiz")
+                    .update({
+                  "SecondName": username,
+                  "Second": score,
+                })
+              });
+      return;
+    } else if (score > third) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "ThirdName": username,
+        "Third": score,
+      });
+      return;
+    }
+
+    if (first == -1) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "FirstName": username,
+        "First": score,
+      });
+      return;
+    } else if (second == -1) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "SecondName": username,
+        "Second": score,
+      });
+      return;
+    } else if (third == -1) {
+      _firebase
+          .collection("Categories")
+          .doc("$currentCategory")
+          .collection("Quizzes")
+          .doc("$currentQuiz")
+          .update({
+        "ThirdName": username,
+        "Third": score,
+      });
+      return;
+    }
+  }
+
   nextQua() {
     if (currntQua >= Q.length - 1) {
       _controller.pause();
       score = (score / Q.length) * 100;
+
+      checkLeaderBoard();
 
       SweetAlert.show(context,
           title: "You have finished the quiz",
@@ -80,10 +245,47 @@ class _aQuizState extends State<aQuiz> {
               .update({
             "Total Rate": FieldValue.increment(rate),
             "number of ratings": FieldValue.increment(1),
-          });
+          }).then((value) => {
+                    _firebase
+                        .collection("Categories")
+                        .doc("$currentCategory")
+                        // ignore: missing_return
+                        .collection("Quizzes")
+                        .doc("/$currentQuiz")
+                        .get()
+                        .then((value) => {
+                              tempA = value.get("Total Rate"),
+                              tempb = value.get("number of ratings"),
+                            })
+                        .then((value) => {
+                              _firebase
+                                  .collection("Categories")
+                                  .doc("$currentCategory")
+                                  // ignore: missing_return
+                                  .collection("Quizzes")
+                                  .doc("/$currentQuiz")
+                                  .update({
+                                "The rate": (tempA / tempb),
+                              })
+                            })
+                  });
         }
+        DateTime now = new DateTime.now();
+        DateTime date = new DateTime(
+            now.year, now.month, now.day, now.hour, now.minute, now.second);
+        _firebase
+            .collection("Usernames")
+            .doc("$username")
+            .collection("MyHistory")
+            .add({
+          "Quiz name": currentQuiz,
+          "Quiz Score": score.toString(),
+          "date": date,
+        });
+
         Navigator.pop(context);
       });
+      leaderBaord(score);
     }
     if (currntQua < Q.length - 1) {
       _controller.restart();
@@ -97,6 +299,34 @@ class _aQuizState extends State<aQuiz> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.clear,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                        title: Text("Are you sure about exiting the quiz?"),
+                        content: Text(
+                            "Notice that you will lose any progress you have made"),
+                        actions: [
+                          FlatButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("NO")),
+                          FlatButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: Text("YES"))
+                        ],
+                      ));
+            },
+          ),
           centerTitle: true,
           backgroundColor: Color(0xFF673ab7),
         ),

@@ -4,6 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:thaqafah/Create_Quiz_Screen.dart';
 import 'package:thaqafah/UserScreens/Quiz_description.dart';
 
+var first;
+var firstName;
+var second;
+var secondName;
+var third;
+var thirdName;
+
 class UserCategory extends StatefulWidget {
   @override
   _UserCategoryState createState() => _UserCategoryState();
@@ -13,6 +20,7 @@ class _UserCategoryState extends State<UserCategory> {
   var totalRate;
   var numOfRatrings;
   String aQuizRate = "--";
+
   @override
   Widget build(BuildContext context) {
     final _firebase = FirebaseFirestore.instance;
@@ -70,6 +78,7 @@ class _UserCategoryState extends State<UserCategory> {
                         .collection("Categories")
                         .doc("$currentCategory")
                         .collection("Quizzes")
+                        .orderBy("The rate", descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -79,9 +88,10 @@ class _UserCategoryState extends State<UserCategory> {
                           var aCategory = Category.id;
                           totalRate = Category.get("Total Rate");
                           numOfRatrings = Category.get("number of ratings");
+
                           if (numOfRatrings != 0) {
                             aQuizRate =
-                                (totalRate / numOfRatrings).toStringAsFixed(1);
+                                Category.get("The rate").toStringAsFixed(1);
                           } else {
                             aQuizRate = "--";
                           }
@@ -104,6 +114,13 @@ class _UserCategoryState extends State<UserCategory> {
                                         setState(() {
                                           currentQuiz = aCategory;
                                           QuizName = aCategory;
+                                          first = Category.get("First");
+                                          second = Category.get("Second");
+                                          third = Category.get("Third");
+                                          firstName = Category.get("FirstName");
+                                          secondName =
+                                              Category.get("SecondName");
+                                          thirdName = Category.get("ThirdName");
 
                                           QuizDescrepyion =
                                               Category.get("Quiz Description");
@@ -111,6 +128,36 @@ class _UserCategoryState extends State<UserCategory> {
                                           numOfQuestions = Category.get(
                                                   "number of Questions")
                                               .toString();
+                                          if (first == -1.0) {
+                                            setState(() {
+                                              // ignore: unnecessary_statements
+                                              firstOne == "-";
+                                            });
+                                          } else {
+                                            setState(() {
+                                              firstOne = "$firstName $first";
+                                            });
+                                          }
+                                          if (second == -1.0) {
+                                            setState(() {
+                                              // ignore: unnecessary_statements
+                                              secondOne == "-";
+                                            });
+                                          } else {
+                                            setState(() {
+                                              secondOne = "$secondName $second";
+                                            });
+                                          }
+                                          if (third == -1.0) {
+                                            setState(() {
+                                              // ignore: unnecessary_statements
+                                              thirdOne == "-";
+                                            });
+                                          } else {
+                                            setState(() {
+                                              thirdOne = "$thirdName $third";
+                                            });
+                                          }
                                         });
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
@@ -125,7 +172,7 @@ class _UserCategoryState extends State<UserCategory> {
                                             aCategory,
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 30),
+                                                fontSize: 24),
                                           ),
                                           Container(
                                             child: Center(
@@ -146,7 +193,7 @@ class _UserCategoryState extends State<UserCategory> {
                                           ),
                                         ],
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                            MainAxisAlignment.spaceBetween,
                                       )),
                                 ),
                                 SizedBox(
